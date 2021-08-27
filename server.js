@@ -8,18 +8,29 @@ const
     mongoose = require('mongoose')
 
 app.use(cors());
+app.use(express.json());
 
-const books = require("./modules/Books.js");
-const booksRouter = require('./modules/booksRouter.js')
 
-const seedBooksData = require('./seeds/BooksSeed');
+app.get('', (request, response) => {
+    response.send(200).send("Ok")
+})
 
-// one way
-// app.get('/api/books/', books.getAllUsers);
+// const books = require("./modules/Books.js");
+const booksRouter = require('./routes/booksRouter.js')
 
-// another way
-// routs
-app.use('/api/books/', booksRouter);
+const seedUsers = require('./seeds/seedUsers');
+// seedUsers()
+
+
+// CRUD application
+// app.get('/books', Book.list);
+// app.post('/books', Book.add);
+// app.delete('/books/:id', Book.delete);
+// app.put('/books/:id', Book.update);
+
+
+// 2. web app (API)
+app.use('/api', booksRouter);
 
 
 
