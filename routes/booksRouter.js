@@ -1,6 +1,7 @@
 'use strict';
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const {createAuthor, createBook} = require('../heplerFunctions/helperFunctions')
 
 const [User, Book] = require('../models/User');
 
@@ -132,9 +133,15 @@ router.post('/delete/:id', async (request, response, next) => {
 
 router.post('/addUser', async (request, response, next) => {
     let { name, email } = request.body
-    let newUser = await new User({ name, email })
-    newUser.save(err => response.status(400).send(false))
-    response.status(200).send(true);
+    createAuthor(name, email).then( (result) => {
+        if (!result) response.status(400).send(false)
+        response.status(200).send(true);
+    })
+    
+    // let { name, email } = request.body
+    // let newUser = await new User({ name, email })
+    // newUser.save(err => response.status(400).send(false))
+    // response.status(200).send(true);
 })
 
 
