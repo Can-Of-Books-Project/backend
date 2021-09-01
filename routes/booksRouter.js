@@ -5,14 +5,6 @@ var router = express.Router();
 const [User, Book] = require('../models/User');
 
 router.get('/all', async (request, response, next) => {
-    // User.find({}, (error, result) => {
-    //     if (error) {
-    //         // 400 Bad Request
-    //         res.status(400).send
-    //     }
-    //     response.status(200).send(result)
-    // })
-
     await Book
         .find()
         .populate("authInfo")
@@ -63,7 +55,6 @@ router.get('/booksByAuthor', async (request, response, next) => {
 
 router.get('/bookByTitle', async (request, response, next) => {
     let { title } = request.query;
-    console.log(title)
     await Book
         .find({ title })
         .populate("authInfo")
@@ -82,32 +73,90 @@ router.get('/bookByTitle', async (request, response, next) => {
         })
 })
 
-router.post('/update', async (request, response, next) => {
-    // const { index } = request.params;
-    let { title, description, status, img, index } = request.body
-    const book = await Book
-        .find({ _id: '6129561331d7f9ff62f4a0ae' }, (error, result) => {
+router.post('/update/:id', async (request, response, next) => {
 
+    const { id } = request.params;
+    let { title, description, status, img } = request.body
+    const book = await Book
+        .findByIdAndUpdate(id, { title, description, status, img }, (error, result) => {
+            if (error) {
+                console.log('400 Bad Request', error);
+                // 400 Bad Request
+                response.send(false)
+            };
+            if (!result) {
+                // 204 No Content
+                response.send(false)
+            }
+        })
+    response.send(book);
+})
+
+router.delete('/delete/:id', async (request, response, next) => {
+    const { id } = request.params;
+    await Book
+        .deleteOne({ _id: id }, (error, result) => {
             if (error) {
                 console.log('400 Bad Request', error);
                 // 400 Bad Request
                 response.status(400).send(false)
             };
-            if (!result.length) {
+            if (!result.deletedCount && result.ok) {
                 // 204 No Content
-                response.status(204).send(false)
+                response.status(204).send(true)
             }
-
-            let newData = {
-                title, description, status, img,
-                ...result,
+            if (result.deletedCount) {
+                response.status(200).send(true);
             }
-            result = newData
-  
-            result.save()
-            response.status(200).send(result);
         })
+})
 
+router.post('/delete/:id', async (request, response, next) => {
+    const { id } = request.params;
+    await Book
+        .deleteOne({ _id: id }, (error, result) => {
+            if (error) {
+                console.log('400 Bad Request', error);
+                // 400 Bad Request
+                response.status(400).send(false)
+            };
+            if (!result.deletedCount && result.ok) {
+                // 204 No Content
+                response.status(204).send(true)
+            }
+            if (result.deletedCount) {
+                response.status(200).send(true);
+            }
+        })
+})
+
+router.post('/addUser', async (request, response, next) => {
+    let { name, email } = request.body
+    let newUser = await new User({name, email})
+    newUser.save( err => response.status(400).send(false))
+    response.status(200).send(true);
 })
 
 module.exports = router
+
+///////////////////////
+router.post('/addBook', async (request, response, next) => {
+
+    let { title, description, status, img, user } = request.body
+
+    let newBook = { title, description, status, img, user }
+    const book = await Book
+        .findByIdAndUpdate(id, { title, description, status, img }, (error, result) => {
+            if (error) {
+                console.log('400 Bad Request', error);
+                // 400 Bad Request
+                response.send(false)
+            };
+            if (!result) {
+                // 204 No Content
+                response.send(false)
+            }
+        })
+    response.send(book);
+})
+
