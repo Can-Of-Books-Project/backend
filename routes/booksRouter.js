@@ -132,31 +132,38 @@ router.post('/delete/:id', async (request, response, next) => {
 
 router.post('/addUser', async (request, response, next) => {
     let { name, email } = request.body
-    let newUser = await new User({name, email})
-    newUser.save( err => response.status(400).send(false))
+    let newUser = await new User({ name, email })
+    newUser.save(err => response.status(400).send(false))
+    response.status(200).send(true);
+})
+
+
+router.post('/addBook', async (request, response, next) => {
+
+    let { title, description, status, img, name } = request.body
+    let authInfo = await User.find({ name }, (error, result) => {
+        if (error) {
+            console.log(error);
+            response.status(400).send(false);
+        }
+        // if (!result.length) { // if returned empty array => no user matched 
+        //     response.status(404).send(false);
+        // }
+        return result
+    })
+    authInfo = authInfo[0]._id
+    let data = { title, description, status, img, authInfo }
+    const newBook = await new Book
+        (data, (error, result) => {
+            if (error) {
+                console.log('400 Bad Request', error);
+                // 400 Bad Request
+                response.status(400).send(false)
+            }
+            return result
+        })
+    newBook.save()
     response.status(200).send(true);
 })
 
 module.exports = router
-
-///////////////////////
-router.post('/addBook', async (request, response, next) => {
-
-    let { title, description, status, img, user } = request.body
-
-    let newBook = { title, description, status, img, user }
-    const book = await Book
-        .findByIdAndUpdate(id, { title, description, status, img }, (error, result) => {
-            if (error) {
-                console.log('400 Bad Request', error);
-                // 400 Bad Request
-                response.send(false)
-            };
-            if (!result) {
-                // 204 No Content
-                response.send(false)
-            }
-        })
-    response.send(book);
-})
-
