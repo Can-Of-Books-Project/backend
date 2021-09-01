@@ -60,7 +60,7 @@ router.get('/bookByTitle', async (request, response, next) => {
         .populate("authInfo")
         .exec((error, result) => {
             if (error) {
-                console.log('400 Bad Request', error);
+                console.log(error);
                 // 400 Bad Request
                 response.status(400).send(false)
             };
@@ -80,7 +80,7 @@ router.post('/update/:id', async (request, response, next) => {
     const book = await Book
         .findByIdAndUpdate(id, { title, description, status, img }, (error, result) => {
             if (error) {
-                console.log('400 Bad Request', error);
+                console.log(error);
                 // 400 Bad Request
                 response.send(false)
             };
@@ -97,7 +97,7 @@ router.delete('/delete/:id', async (request, response, next) => {
     await Book
         .deleteOne({ _id: id }, (error, result) => {
             if (error) {
-                console.log('400 Bad Request', error);
+                console.log(error);
                 // 400 Bad Request
                 response.status(400).send(false)
             };
@@ -116,7 +116,7 @@ router.post('/delete/:id', async (request, response, next) => {
     await Book
         .deleteOne({ _id: id }, (error, result) => {
             if (error) {
-                console.log('400 Bad Request', error);
+                console.log(error);
                 // 400 Bad Request
                 response.status(400).send(false)
             };
@@ -149,7 +149,7 @@ router.post('/addBook', async (request, response, next) => {
         // if (!result.length) { // if returned empty array => no user matched 
         //     response.status(404).send(false);
         // }
-        
+
         // return authInfo[0]._id
         return result
     })
@@ -158,7 +158,7 @@ router.post('/addBook', async (request, response, next) => {
     const newBook = await new Book
         (data, (error, result) => {
             if (error) {
-                console.log('400 Bad Request', error);
+                console.log(error);
                 // 400 Bad Request
                 response.status(400).send(false)
             }
