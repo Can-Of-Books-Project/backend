@@ -8,13 +8,13 @@ const bookSchema = new Schema({
     title: {type: String, required:true},
     description: {type: String, required: true},
     status: {type:String, uppercase:true, enum: ['LIFE-CHANGING', 'FAVORITE FIVE', 'RECOMMENDED TO ME']},
-    img: {type:String},
+    img: {type:String, default: 'https://pngimg.com/uploads/book/book_PNG2114.png'},
     authInfo: { type:Schema.Types.ObjectId, ref:'user' }
 });
 
 const userSchema = new Schema(({
-    name: {type:String, required:true},
-    email: {type:String, required:true},
+    name: {type:String, required:true, unique: true},
+    email: {type:String, required:true, unique: true},
     // books: [{ type:Schema.Types.ObjectId, ref:'book' }]
 }));
 
