@@ -149,6 +149,8 @@ router.post('/addBook', async (request, response, next) => {
         // if (!result.length) { // if returned empty array => no user matched 
         //     response.status(404).send(false);
         // }
+        
+        // return authInfo[0]._id
         return result
     })
     authInfo = authInfo[0]._id
