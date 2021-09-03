@@ -12,7 +12,7 @@ app.use(express.json());
 
 
 app.get('', (request, response) => {
-    response.send(200).send("Ok")
+    response.status(200).send("Ok")
 })
 
 // const books = require("./modules/Books.js");

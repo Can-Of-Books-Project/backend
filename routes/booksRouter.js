@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const {createAuthor, createBook} = require('../heplerFunctions/helperFunctions')
+const {createAuthor, createBook, userExist} = require('../heplerFunctions/helperFunctions')
 
 const [User, Book] = require('../models/User');
 
@@ -29,8 +29,8 @@ router.get('/allAuthers', async (request, response, next) => {
 });
 
 
-router.get('/booksByAuthor', async (request, response, next) => {
-    let userName = request.query.author;
+router.post('/booksByEmail', async (request, response, next) => {
+    let userEmail = request.body.authorEmail;
     await Book
         .find()
         .populate({
@@ -45,17 +45,17 @@ router.get('/booksByAuthor', async (request, response, next) => {
                 response.status(400).send(false)
             };
             if (!result.length) {
-                // 401 Unauthorized
-                response.status(401).send(false)
+                // 204 No Content
+                response.status(204).send(true)
             }
-            let data = result.filter(user => user.authInfo.name == userName)
+            let data = result.filter(user => user.authInfo.email == userEmail)
             response.status(200).send(data);
 
         })
 })
 
 router.get('/bookByTitle', async (request, response, next) => {
-    let { title } = request.query;
+    let { title } = request.body;
     await Book
         .find({ title })
         .populate("authInfo")
@@ -93,24 +93,6 @@ router.post('/update/:id', async (request, response, next) => {
     response.send(book);
 })
 
-router.delete('/delete/:id', async (request, response, next) => {
-    const { id } = request.params;
-    await Book
-        .deleteOne({ _id: id }, (error, result) => {
-            if (error) {
-                console.log(error);
-                // 400 Bad Request
-                response.status(400).send(false)
-            };
-            if (!result.deletedCount && result.ok) {
-                // 204 No Content
-                response.status(204).send(true)
-            }
-            if (result.deletedCount) {
-                response.status(200).send(true);
-            }
-        })
-})
 
 router.post('/delete/:id', async (request, response, next) => {
     const { id } = request.params;
@@ -133,10 +115,22 @@ router.post('/delete/:id', async (request, response, next) => {
 
 router.post('/addUser', async (request, response, next) => {
     let { name, email } = request.body
-    createAuthor(name, email).then( (result) => {
-        if (!result) response.status(400).send(false)
-        response.status(200).send(true);
+    userExist(email).then(result => {
+        if (!result.length) {
+            // console.log("no")
+            createAuthor(name, email).then( (result) => {
+                if (!result) response.status(400).send(false)
+                response.status(200).send(true);
+            })
+        }
+        else {
+            // console.log("yes")
+            // 208 Already Reported (WebDAV)
+            response.status(208).send(true);
+        }
     })
+
+    
     
     // let { name, email } = request.body
     // let newUser = await new User({ name, email })
@@ -147,8 +141,8 @@ router.post('/addUser', async (request, response, next) => {
 
 router.post('/addBook', async (request, response, next) => {
 
-    let { title, description, status, img, name } = request.body
-    let authInfo = await User.find({ name }, (error, result) => {
+    let { title, description, status, img, email } = request.body
+    let authInfo = await User.find({ email }, (error, result) => {
         if (error) {
             console.log(error);
             response.status(400).send(false);
@@ -161,6 +155,9 @@ router.post('/addBook', async (request, response, next) => {
         return result
     })
     authInfo = authInfo[0]._id
+    if (!img) {
+        img = 'https://pngimg.com/uploads/book/book_PNG2114.png'
+    }
     let data = { title, description, status, img, authInfo }
     const newBook = await new Book
         (data, (error, result) => {
