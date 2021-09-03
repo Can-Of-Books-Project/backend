@@ -21,7 +21,6 @@ helperFunctions.createBook = async (title, description, status, img, authInfo) =
 }
 
 helperFunctions.userExist = async (email) => {
-    console.log(email)
     return await User.find({email:email}, (error, result) => {
         if (error) {
             console.log(error);

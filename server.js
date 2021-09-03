@@ -38,7 +38,6 @@ app.use('/api', booksRouter);
 
 const PORT = process.env.PORT
 const DATABASE_URL_LOCAL = process.env.DATABASE_URL_LOCAL
-console.log(DATABASE_URL_LOCAL)
 app.listen(PORT, () => {
     console.log(`listening on PORT: ${PORT}`);
     mongoose.connect(DATABASE_URL_LOCAL, {useNewUrlParser: true, useUnifiedTopology: true});

@@ -78,6 +78,9 @@ router.post('/update/:id', async (request, response, next) => {
 
     const { id } = request.params;
     let { title, description, status, img } = request.body
+    if (!img) {
+        img = 'https://pngimg.com/uploads/book/book_PNG2114.png'
+    }
     const book = await Book
         .findByIdAndUpdate(id, { title, description, status, img }, (error, result) => {
             if (error) {
@@ -103,11 +106,11 @@ router.post('/delete/:id', async (request, response, next) => {
                 // 400 Bad Request
                 response.status(400).send(false)
             };
-            if (!result.deletedCount && result.ok) {
+            if ( (result.deletedCount == 0) && result.ok == 1) {
                 // 204 No Content
                 response.status(204).send(true)
             }
-            if (result.deletedCount) {
+            if (result.deletedCount == 1) {
                 response.status(200).send(true);
             }
         })
@@ -117,14 +120,12 @@ router.post('/addUser', async (request, response, next) => {
     let { name, email } = request.body
     userExist(email).then(result => {
         if (!result.length) {
-            // console.log("no")
             createAuthor(name, email).then( (result) => {
                 if (!result) response.status(400).send(false)
                 response.status(200).send(true);
             })
         }
         else {
-            // console.log("yes")
             // 208 Already Reported (WebDAV)
             response.status(208).send(true);
         }
@@ -158,9 +159,9 @@ router.post('/addBook', async (request, response, next) => {
     if (!img) {
         img = 'https://pngimg.com/uploads/book/book_PNG2114.png'
     }
-    let data = { title, description, status, img, authInfo }
+    let body = { title, description, status, img, authInfo }
     const newBook = await new Book
-        (data, (error, result) => {
+        ( body, (error, result) => {
             if (error) {
                 console.log(error);
                 // 400 Bad Request
