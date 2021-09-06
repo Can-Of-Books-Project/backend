@@ -1,11 +1,17 @@
 'use strict';
 const express = require('express');
+const app = express()
 const router = express.Router();
-const {createAuthor, createBook, userExist} = require('../heplerFunctions/helperFunctions')
+const logger = require('../middlewear/loggerMiddlewear')
 
+
+
+
+const {createAuthor, createBook, userExist} = require('../heplerFunctions/helperFunctions')
 const [User, Book] = require('../models/User');
 
-router.get('/all', async (request, response, next) => {
+// middlewear for a spacific rout
+router.get('/all',logger, async (request, response) => {
     await Book
         .find()
         .populate("authInfo")
@@ -17,6 +23,8 @@ router.get('/all', async (request, response, next) => {
             response.status(200).send(result)
         })
 });
+
+
 
 router.get('/allAuthers', async (request, response, next) => {
     await User.find({}, (error, result) => {
