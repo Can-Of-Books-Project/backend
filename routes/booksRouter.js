@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express()
 const router = express.Router();
-const logger = require('../middlewear/loggerMiddlewear')
+const logger = require('../middleware/loggerMiddleware')
 
 
 

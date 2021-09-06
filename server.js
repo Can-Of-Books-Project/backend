@@ -32,7 +32,7 @@ const seedUsers = require('./seeds/seedUsers');
 const booksRouter = require('./routes/booksRouter.js')
 
 // middlewear for the wholl app
-const logger = require('./middlewear/loggerMiddlewear')
+const logger = require('./middleware/loggerMiddleware')
 app.use(logger);
 
 app.use('/api', booksRouter);
