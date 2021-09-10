@@ -1,31 +1,25 @@
-
-const [User] = require('../models/User');
+require('dotenv').config();
+const [ decrypt ] = require('../heplerFunctions/crypto')
 
 // No need for req and res parameters if you wont use it
 const myLogger = async function (req, res, next) {
-
-    let email = req.body.authorEmail;
-    if (!email) {
-        next("Only for Authenticated users");
+    let { key } = req.body;
+    
+    if (key == undefined) {
+        next("Access Denied")
         return
     }
 
-    await User.find({ email }, (error, result) => {
-        if (error) {
-            console.log(error);
-            // status code : 500 (Internal Server Error)
-            next("Internal Server Error");
-        };
-
-        if (!result.length) {
-            next("Access Denied");
-        } else {
-            console.log('LOGGED');
-            next();
-        }
-
-
-    });
+    
+    let decrypt_key = decrypt(key)
+    let SECRET_KEY = process.env.SECRET_KEY
+    if(SECRET_KEY == decrypt_key) {
+        next()
+        return
+    } else {
+        next("Access Denied")
+        return
+    }
 
 }
 

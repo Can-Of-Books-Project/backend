@@ -2,17 +2,20 @@
 require('dotenv').config();
 
 const 
-    express = require('express'),
-    app = express(),
-    cors = require('cors'),
-    mongoose = require('mongoose')
+express = require('express'),
+app = express(),
+cors = require('cors'),
+mongoose = require('mongoose')
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // to allow post requet
+app.use(express.static('public')) // Serving static files in Express
 
-
+// this endpoint is setted before the logger middleware
+// so any request here will not go to the middleware 
+// // // but why it still give me 500 not 200 ?
 app.get('', (request, response) => {
-    response.status(200).send("Ok")
+    response.status(200).sendFile('./index.html')
 })
 
 
@@ -31,9 +34,10 @@ const seedUsers = require('./seeds/seedUsers');
 // way 2. web app (API)
 const booksRouter = require('./routes/booksRouter.js')
 
-// middlewear for the wholl app
+// middleware for the every endpoint bellow ? or for the whole app
 const logger = require('./middleware/loggerMiddleware')
 app.use(logger);
+
 
 app.use('/api', booksRouter);
 
