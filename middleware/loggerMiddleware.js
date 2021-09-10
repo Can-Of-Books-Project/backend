@@ -11,7 +11,7 @@ const myLogger = async function (req, res, next) {
     }
     
     
-    let decrypt_key = decryptWithAES(key)
+    let decrypt_key = decryptWithAES(key + 'bg=')
     console.log('decrypt_key', decrypt_key)
 
     let SECRET_KEY = process.env.SECRET_KEY
